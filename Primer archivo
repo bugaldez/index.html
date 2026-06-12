@@ -1,10 +1,256 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atlas Morfológico Interactivo · Hematología</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rojo: #993C1D;
+      --rojo-medio: #D85A30;
+      --rojo-claro: #F5C4B3;
+      --rojo-palido: #FAECE7;
+      --fondo: #ffffff;
+      --fondo2: #F8F6F5;
+      --borde: #E8E0DC;
+      --texto: #1a0f0a;
+      --texto-suave: #6b5a52;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #7A2900 0%, #993C1D 50%, #B84A22 100%);
+      padding: 40px 48px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .hero-left .pretitulo { font-size: 11px; color: var(--rojo-claro); font-weight: 500; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+    .hero-left .titulo { font-size: 52px; font-weight: 500; color: #fff; line-height: 1; margin-bottom: 8px; }
+    .hero-left .titulo span { color: var(--rojo-claro); }
+    .hero-left .subtitulo { font-size: 14px; color: #F0997B; margin-bottom: 4px; }
+    .hero-left .institucion { font-size: 12px; color: rgba(255,255,255,.6); }
+    .hero-right { text-align: right; }
+    .hero-right .universidad { font-size: 13px; color: var(--rojo-claro); font-weight: 500; }
+    .hero-right .docente { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 3px; }
+
+    .hero-stats { display: flex; gap: 12px; margin-top: 12px; justify-content: flex-end; }
+    .stat { background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 8px 14px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 500; color: #fff; line-height: 1; }
+    .stat-label { font-size: 9px; color: var(--rojo-claro); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    /* TAGS */
+    .tags-bar { background: var(--fondo2); padding: 12px 48px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--borde); }
+    .tag { font-size: 10px; padding: 4px 12px; border-radius: 20px; font-weight: 500; border: 1px solid; }
+
+    /* DESCRIPCIÓN */
+    .desc-bar { padding: 20px 48px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; border-bottom: 1px solid var(--borde); background: #fff; }
+    .desc-txt { font-size: 13px; color: var(--texto-suave); line-height: 1.6; max-width: 580px; }
+
+    .btn-ingresar {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--rojo); color: #fff;
+      padding: 12px 24px; border-radius: 30px;
+      font-size: 14px; font-weight: 500; text-decoration: none;
+      transition: all .2s; white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(153,60,29,.25);
+    }
+    .btn-ingresar:hover { background: #7A2900; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(153,60,29,.35); }
+
+    /* BODY */
+    .body { padding: 24px 48px 40px; background: #fff; }
+
+    .seccion-label {
+      font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em;
+      margin: 20px 0 12px; display: flex; align-items: center; gap: 10px;
+    }
+    .seccion-label::after { content: ''; flex: 1; height: 1px; background: var(--borde); }
+
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+    .mod-card {
+      border-radius: 10px; overflow: hidden; border: 1.5px solid;
+      text-decoration: none; display: block;
+      transition: transform .15s, box-shadow .15s;
+      cursor: pointer; background: #fff;
+    }
+    .mod-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+
+    .mod-top { padding: 8px 12px 5px; display: flex; justify-content: space-between; align-items: center; }
+    .mod-etiqueta { font-size: 10px; font-weight: 500; }
+    .mod-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .mod-nombre { font-size: 12px; font-weight: 500; color: #1a0f0a; padding: 0 12px 4px; line-height: 1.3; }
+    .mod-fichas { font-size: 10px; padding: 0 12px 10px; }
+
+    /* FOOTER */
+    .footer {
+      background: var(--fondo2); padding: 14px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--borde); flex-wrap: wrap; gap: 10px;
+    }
+    .footer-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-badge { font-size: 9px; padding: 3px 10px; border-radius: 20px; border: 1px solid; font-weight: 500; }
+    .footer-txt { font-size: 10px; color: var(--texto-suave); }
+
+    @media (max-width: 900px) {
+      .hero { padding: 28px 24px; }
+      .hero-left .titulo { font-size: 38px; }
+      .tags-bar, .desc-bar, .body, .footer { padding-left: 24px; padding-right: 24px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .hero-left .titulo { font-size: 30px; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Atlas Morfológico Interactivo · Hematología</h1>
-  <p>Universidad de Tarapacá · Mg. Bárbara Ugalde Zúñiga · 2026</p>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="pretitulo">Recurso educativo interactivo</div>
+      <div class="titulo">Atlas<br>Morfológico<br><span>Interactivo</span></div>
+      <div class="subtitulo">Hematología I y II · Laboratorio Clínico y Medicina Transfusional</div>
+      <div class="institucion">Departamento de Tecnología Médica · Universidad de Tarapacá</div>
+    </div>
+    <div class="hero-right">
+      <div class="universidad">Universidad de Tarapacá</div>
+      <div class="docente">Mg. Bárbara Ugalde Zúñiga · 2026</div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">12</div><div class="stat-label">Módulos</div></div>
+        <div class="stat"><div class="stat-num">32+</div><div class="stat-label">Fichas</div></div>
+        <div class="stat"><div class="stat-num">2</div><div class="stat-label">Asignaturas</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tags-bar">
+    <span class="tag" style="color:#993C1D;border-color:#F5C4B3;background:#FAECE7">Serie roja</span>
+    <span class="tag" style="color:#185FA5;border-color:#B5D4F4;background:#E6F1FB">Serie granulocítica</span>
+    <span class="tag" style="color:#0F6E56;border-color:#9FE1CB;background:#E1F5EE">Granulocitos maduros</span>
+    <span class="tag" style="color:#993556;border-color:#F4C0D1;background:#FBEAF0">Serie linfoide</span>
+    <span class="tag" style="color:#D94F00;border-color:#F5B49A;background:#FCEEE6">Serie monocítica</span>
+    <span class="tag" style="color:#3D5A6C;border-color:#B8CDD6;background:#EBF0F3">Serie plaquetaria</span>
+    <span class="tag" style="color:#534AB7;border-color:#CECBF6;background:#EEEDFE">Leucemias · SMD · Linfomas</span>
+    <span class="tag" style="color:#3B6D11;border-color:#C0DD97;background:#EAF3DE">Gammapatías</span>
+    <span class="tag" style="color:#5F5E5A;border-color:#D3D1C7;background:#F1EFE8">Casos clínicos</span>
+  </div>
+
+  <div class="desc-bar">
+    <p class="desc-txt">Recurso educativo con fotografías microscópicas propias, fichas morfológicas interactivas, hotspots sobre imágenes y autoevaluación por módulo. Cubre morfología normal y patológica de todas las series hematológicas.</p>
+    <a href="modulos.html" class="btn-ingresar">Ingresar al atlas →</a>
+  </div>
+
+  <div class="body">
+
+    <div class="seccion-label" style="color:#993C1D">Hematología I · Morfología normal y benigna</div>
+
+    <div class="grid">
+      <a href="modulos.html#mod1" class="mod-card" style="border-color:#F5C4B3">
+        <div class="mod-top" style="background:#FAECE7"><span class="mod-etiqueta" style="color:#993C1D">Módulo 1</span><div class="mod-dot" style="background:#993C1D"></div></div>
+        <div class="mod-nombre">Serie roja · Eritropoyesis</div>
+        <div class="mod-fichas" style="color:#D85A30">6 estadios · 6 fichas</div>
+      </a>
+      <a href="modulos.html#mod2a" class="mod-card" style="border-color:#B5D4F4">
+        <div class="mod-top" style="background:#E6F1FB"><span class="mod-etiqueta" style="color:#185FA5">Módulo 2A</span><div class="mod-dot" style="background:#185FA5"></div></div>
+        <div class="mod-nombre">Serie granulocítica</div>
+        <div class="mod-fichas" style="color:#378ADD">5 estadios · 5 fichas</div>
+      </a>
+      <a href="modulos.html#mod2b" class="mod-card" style="border-color:#9FE1CB">
+        <div class="mod-top" style="background:#E1F5EE"><span class="mod-etiqueta" style="color:#0F6E56">Módulo 2B</span><div class="mod-dot" style="background:#0F6E56"></div></div>
+        <div class="mod-nombre">Granulocitos maduros</div>
+        <div class="mod-fichas" style="color:#1D9E75">3 células · 3 fichas</div>
+      </a>
+      <a href="modulos.html#mod3a" class="mod-card" style="border-color:#F4C0D1">
+        <div class="mod-top" style="background:#FBEAF0"><span class="mod-etiqueta" style="color:#993556">Módulo 3A</span><div class="mod-dot" style="background:#993556"></div></div>
+        <div class="mod-nombre">Linfopoyesis general</div>
+        <div class="mod-fichas" style="color:#D4537E">3 estadios · 3 fichas</div>
+      </a>
+    </div>
+
+    <div class="grid" style="margin-top:0">
+      <a href="modulos.html#mod3b" class="mod-card" style="border-color:#F4C0D1">
+        <div class="mod-top" style="background:#FBEAF0"><span class="mod-etiqueta" style="color:#993556">Módulo 3B</span><div class="mod-dot" style="background:#993556"></div></div>
+        <div class="mod-nombre">Linfocitos maduros</div>
+        <div class="mod-fichas" style="color:#D4537E">6 fichas · B, T, NK, plasma</div>
+      </a>
+      <a href="modulos.html#mod4" class="mod-card" style="border-color:#F5B49A">
+        <div class="mod-top" style="background:#FCEEE6"><span class="mod-etiqueta" style="color:#D94F00">Módulo 4</span><div class="mod-dot" style="background:#D94F00"></div></div>
+        <div class="mod-nombre">Serie monocítica</div>
+        <div class="mod-fichas" style="color:#F26522">4 estadios · 4 fichas</div>
+      </a>
+      <a href="modulos.html#mod5" class="mod-card" style="border-color:#B8CDD6">
+        <div class="mod-top" style="background:#EBF0F3"><span class="mod-etiqueta" style="color:#3D5A6C">Módulo 5</span><div class="mod-dot" style="background:#3D5A6C"></div></div>
+        <div class="mod-nombre">Serie plaquetaria</div>
+        <div class="mod-fichas" style="color:#5F7D8F">5 estadios · 5 fichas</div>
+      </a>
+      <div></div>
+    </div>
+
+    <div class="seccion-label" style="color:#534AB7; margin-top:24px">Hematología II · Patología hematológica</div>
+
+    <div class="grid">
+      <a href="modulos.html#mod6" class="mod-card" style="border-color:#CECBF6">
+        <div class="mod-top" style="background:#EEEDFE"><span class="mod-etiqueta" style="color:#534AB7">Módulo 6</span><div class="mod-dot" style="background:#534AB7"></div></div>
+        <div class="mod-nombre">Leucemias agudas · Blastos</div>
+        <div class="mod-fichas" style="color:#7F77DD">FAB + OMS 2022</div>
+      </a>
+      <a href="modulos.html#mod7" class="mod-card" style="border-color:#CECBF6">
+        <div class="mod-top" style="background:#EEEDFE"><span class="mod-etiqueta" style="color:#534AB7">Módulo 7</span><div class="mod-dot" style="background:#534AB7"></div></div>
+        <div class="mod-nombre">Leucemias crónicas</div>
+        <div class="mod-fichas" style="color:#7F77DD">LMC · LLC · Tricoleucemia</div>
+      </a>
+      <a href="modulos.html#mod8" class="mod-card" style="border-color:#CECBF6">
+        <div class="mod-top" style="background:#EEEDFE"><span class="mod-etiqueta" style="color:#534AB7">Módulo 8</span><div class="mod-dot" style="background:#534AB7"></div></div>
+        <div class="mod-nombre">Síndromes mielodisplásicos</div>
+        <div class="mod-fichas" style="color:#7F77DD">Displasia · OMS 2022</div>
+      </a>
+      <a href="modulos.html#mod9" class="mod-card" style="border-color:#CECBF6">
+        <div class="mod-top" style="background:#EEEDFE"><span class="mod-etiqueta" style="color:#534AB7">Módulo 9</span><div class="mod-dot" style="background:#534AB7"></div></div>
+        <div class="mod-nombre">Linfomas · Hodgkin</div>
+        <div class="mod-fichas" style="color:#7F77DD">Reed-Sternberg · LLP</div>
+      </a>
+    </div>
+
+    <div class="grid-3" style="margin-top:10px">
+      <a href="modulos.html#mod10" class="mod-card" style="border-color:#C0DD97">
+        <div class="mod-top" style="background:#EAF3DE"><span class="mod-etiqueta" style="color:#3B6D11">Módulo 10</span><div class="mod-dot" style="background:#3B6D11"></div></div>
+        <div class="mod-nombre">Gammapatías monoclonales</div>
+        <div class="mod-fichas" style="color:#639922">Mieloma · MGUS · Waldenström</div>
+      </a>
+      <a href="modulos.html#mod11" class="mod-card" style="border-color:#D3D1C7">
+        <div class="mod-top" style="background:#F1EFE8"><span class="mod-etiqueta" style="color:#5F5E5A">Módulo 11</span><div class="mod-dot" style="background:#5F5E5A"></div></div>
+        <div class="mod-nombre">Alteraciones plaquetarias</div>
+        <div class="mod-fichas" style="color:#888780">PTI · PTT · Esquistocitos</div>
+      </a>
+      <a href="modulos.html#mod12" class="mod-card" style="border-color:#D3D1C7">
+        <div class="mod-top" style="background:#F1EFE8"><span class="mod-etiqueta" style="color:#5F5E5A">Módulo 12</span><div class="mod-dot" style="background:#5F5E5A"></div></div>
+        <div class="mod-nombre">Casos clínicos integrados</div>
+        <div class="mod-fichas" style="color:#888780">6 casos · diagnóstico diferencial</div>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-badges">
+      <span class="footer-badge" style="color:#993C1D;border-color:#F5C4B3;background:#FAECE7">Hematología I</span>
+      <span class="footer-badge" style="color:#534AB7;border-color:#CECBF6;background:#EEEDFE">Hematología II</span>
+      <span class="footer-badge" style="color:#0F6E56;border-color:#9FE1CB;background:#E1F5EE">Fotografías propias · May Grünwald-Giemsa</span>
+    </div>
+    <div class="footer-txt">Universidad de Tarapacá · Tecnología Médica · 2026</div>
+  </div>
+
 </body>
 </html>
