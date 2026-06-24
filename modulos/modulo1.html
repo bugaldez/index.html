@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 1 · Serie Roja · Atlas Hematología</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/estilos.css">
+<style>
+  body { background: #fff; }
+
+  .mod-header {
+    background: linear-gradient(135deg, #7A2900 0%, #993C1D 55%, #B84A22 100%);
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .mod-header .breadcrumb { font-size: 11px; color: #F5C4B3; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .mod-header .titulo { font-size: 22px; color: #fff; font-weight: 500; }
+  .volver-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: #fff; text-decoration: none;
+    background: rgba(255,255,255,.15); padding: 7px 16px; border-radius: 20px;
+    transition: background .15s;
+  }
+  .volver-link:hover { background: rgba(255,255,255,.28); }
+
+  /* Navegación de estadios */
+  .nav-estadios {
+    display: flex; gap: 6px; padding: 14px 32px; flex-wrap: wrap;
+    background: #FAECE7; border-bottom: 1px solid #F5C4B3;
+  }
+  .nav-btn {
+    padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid #993C1D; background: #fff; color: #993C1D;
+    transition: all .15s; display: flex; align-items: center; gap: 6px;
+  }
+  .nav-btn.activo { background: #993C1D; color: #fff; }
+  .nav-btn .check { font-size: 11px; }
+  .nav-btn:hover { background: #D85A30; color: #fff; border-color: #D85A30; }
+
+  /* Contenido principal */
+  .contenido-modulo { padding: 24px 32px 40px; max-width: 1100px; margin: 0 auto; }
+
+  .ficha-grid {
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; margin-bottom: 24px;
+  }
+
+  @media (max-width: 800px) {
+    .ficha-grid { grid-template-columns: 1fr; }
+    .mod-header, .nav-estadios, .contenido-modulo { padding-left: 18px; padding-right: 18px; }
+  }
+
+  .panel-foto {
+    background: #FAECE7;
+    border-radius: 14px;
+    border: 1.5px solid #F5C4B3;
+    overflow: hidden;
+  }
+
+  .foto-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F5C4B3;
+  }
+  .foto-header .nombre-celula { font-size: 19px; font-weight: 500; color: #7A2900; }
+  .foto-header .sinonimo { font-size: 12px; color: #993C1D; font-style: italic; margin-top: 2px; }
+  .foto-header .badge-pct {
+    display: inline-block; margin-top: 6px; font-size: 11px; color: #fff;
+    background: #993C1D; padding: 3px 10px; border-radius: 20px;
+  }
+
+  .foto-img-wrap { position: relative; padding: 16px; }
+  .foto-img-wrap img { width: 100%; border-radius: 10px; display: block; }
+
+  .instruccion-hotspot {
+    background: #E1F5EE; color: #0F6E56; font-size: 11px; padding: 6px 14px;
+    display: flex; align-items: center; gap: 6px; border-radius: 0;
+  }
+  .instruccion-hotspot .dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; }
+
+  .hotspot {
+    position: absolute; width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.85); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-weight: 600; color: #fff; font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.35); transition: transform .15s; z-index: 6;
+  }
+  .hotspot:hover, .hotspot.activo { transform: scale(1.2); }
+  .hs-nucleo { background: #993C1D; }
+  .hs-citoplasma { background: #185FA5; }
+  .hs-celula { background: #3B6D11; }
+
+  .hotspot-popup {
+    position: absolute; background: #1a1208; color: #fff; border-radius: 10px;
+    padding: 12px 14px; width: 210px; font-size: 12px; line-height: 1.5;
+    box-shadow: 0 10px 28px rgba(0,0,0,.45); z-index: 20; display: none;
+  }
+  .hotspot-popup.visible { display: block; }
+  .hotspot-popup .ptit { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .hotspot-popup .pcerrar { font-size: 10px; color: #c0a895; cursor: pointer; margin-top: 8px; display: inline-block; }
+
+  .ficha-foto-credito { font-size: 10px; color: #993C1D; padding: 0 16px 12px; text-align: right; }
+
+  /* Panel de info morfológica */
+  .panel-info {
+    border-radius: 14px; border: 1.5px solid #E8E0DC; overflow: hidden;
+  }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .info-campo { padding: 12px 16px; border-bottom: 1px solid #E8E0DC; }
+  .info-campo:nth-child(odd) { border-right: 1px solid #E8E0DC; }
+  .info-campo.full { grid-column: span 2; border-right: none; }
+  .info-label { font-size: 9px; font-weight: 500; color: #9a8a82; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+  .info-valor { font-size: 13px; color: #1a0f0a; line-height: 1.45; }
+
+  .info-distintiva {
+    background: #FAECE7; padding: 12px 16px; border-bottom: 1px solid #F5C4B3;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .di-icon { width: 20px; height: 20px; background: #D85A30; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; margin-top: 1px; }
+  .di-label { font-size: 9px; font-weight: 500; color: #993C1D; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .di-texto { font-size: 13px; font-weight: 500; color: #7A2900; line-height: 1.45; }
+
+  .info-sigdiag { padding: 12px 16px; border-bottom: 1px solid #E8E0DC; background: #F1EFE8; }
+
+  .info-error {
+    background: #FCEBEB; padding: 12px 16px; border-bottom: 1px solid #F7C1C1;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .ei-icon { width: 18px; height: 18px; background: #E24B4A; border-radius: 50%; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 500; }
+  .ei-label { font-size: 9px; font-weight: 500; color: #A32D2D; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .ei-texto { font-size: 13px; color: #791F1F; font-style: italic; line-height: 1.45; }
+
+  .info-clinico { background: #EAF3DE; padding: 12px 16px; }
+  .ki-label { font-size: 9px; font-weight: 500; color: #3B6D11; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .ki-texto { font-size: 13px; color: #173404; line-height: 1.45; }
+
+  /* Botones de acción */
+  .acciones-ficha { display: flex; gap: 10px; padding: 16px 0; flex-wrap: wrap; }
+
+  /* Quiz */
+  .quiz-section {
+    margin-top: 32px; padding-top: 28px; border-top: 2px solid #E8E0DC;
+  }
+  .quiz-header { text-align: center; margin-bottom: 20px; }
+  .quiz-header h2 { font-size: 22px; color: #993C1D; font-weight: 500; margin-bottom: 6px; }
+  .quiz-header p { font-size: 13px; color: #6b5a52; }
+
+  .quiz-pregunta {
+    background: #fff; border: 1.5px solid #E8E0DC; border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 14px;
+  }
+  .quiz-pregunta .num { font-size: 10px; color: #993C1D; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .quiz-pregunta .texto { font-size: 14px; color: #1a0f0a; font-weight: 500; margin-bottom: 12px; }
+  .opciones { display: flex; flex-direction: column; gap: 8px; }
+  .opcion {
+    padding: 10px 14px; border: 1.5px solid #E8E0DC; border-radius: 8px;
+    cursor: pointer; font-size: 13px; transition: all .15s;
+  }
+  .opcion:hover { background: #FAECE7; border-color: #F5C4B3; }
+  .opcion.seleccionada { background: #FAECE7; border-color: #993C1D; }
+  .opcion.correcta { background: #EAF3DE; border-color: #3B6D11; }
+  .opcion.incorrecta { background: #FCEBEB; border-color: #E24B4A; }
+
+  .quiz-resultado {
+    display: none; text-align: center; padding: 24px; border-radius: 12px; margin-top: 16px;
+  }
+  .quiz-resultado.visible { display: block; }
+  .quiz-resultado.aprobado { background: #EAF3DE; border: 1.5px solid #C0DD97; }
+  .quiz-resultado.reprobado { background: #FCEEE6; border: 1.5px solid #F5B49A; }
+  .quiz-resultado .pct { font-size: 36px; font-weight: 500; margin-bottom: 6px; }
+  .quiz-resultado.aprobado .pct { color: #3B6D11; }
+  .quiz-resultado.reprobado .pct { color: #D94F00; }
+  .quiz-resultado .msg { font-size: 14px; color: #1a0f0a; margin-bottom: 16px; }
+
+  #btn-enviar-quiz { display: block; margin: 20px auto 0; }
+</style>
+</head>
+<body>
+
+  <div class="mod-header">
+    <div>
+      <div class="breadcrumb">Hematología I · Atlas morfológico interactivo</div>
+      <div class="titulo">Módulo 1 · Serie Roja · Eritropoyesis</div>
+    </div>
+    <a href="../modulos.html" class="volver-link">← Volver al menú</a>
+  </div>
+
+  <div class="nav-estadios" id="nav-estadios"></div>
+
+  <div class="contenido-modulo">
+    <div id="ficha-render"></div>
+
+    <!-- ===== QUIZ ===== -->
+    <div class="quiz-section" id="quiz-section">
+      <div class="quiz-header">
+        <h2>Autoevaluación · Módulo 1</h2>
+        <p>Responde las 5 preguntas para completar el módulo. Necesitas 60% o más para aprobar y desbloquear el siguiente módulo.</p>
+      </div>
+      <div id="quiz-preguntas"></div>
+      <button class="btn btn-primario" id="btn-enviar-quiz" onclick="enviarQuiz()">Enviar respuestas</button>
+      <div class="quiz-resultado" id="quiz-resultado"></div>
+    </div>
+  </div>
+
+<script src="../js/progreso.js"></script>
+<script src="../js/estadisticas.js"></script>
+<script>
+const MODULO_ID = 'mod1';
+
+const ESTADIOS = [
+  {
+    id: 'proeritroblasto', num: 1, nombre: 'Proeritroblasto', sinonimo: 'Pronormoblasto',
+    badge: '1% de la población de la médula ósea',
+    foto: 'fichas/modulo1/proeritroblasto.jpg',
+    nucleo: 'Redondo u ovalado. Ocupa casi la totalidad de la célula. Cromatina inmadura, fina, en pequeños grumos (vesicular) con una ligera densificación con posición central. 1 a 2 nucléolos visibles.',
+    citoplasma: 'Basófilo intenso, rico en polirribosomas. La membrana citoplasmática puede presentar prolongaciones gruesas.',
+    nc: 'Muy alta · núcleo predominante · citoplasma escaso',
+    hemoglobinizacion: 'Ausente · no hay síntesis de hemoglobina en este estadio · citoplasma completamente basófilo',
+    distintiva: 'Célula más grande de la serie + nucléolo visible + basofilia máxima del citoplasma. Estos tres elementos juntos identifican al proeritroblasto.',
+    sigdiag: 'Normalmente no presente en sangre periférica. Su aparición indica eritropoyesis acelerada o patológica (eritroblastosis, hemólisis severa, infiltración medular).',
+    error: 'Confundir con linfoblasto por el nucléolo prominente. Diferencia clave: el proeritroblasto tiene citoplasma más azul intenso y la cromatina es más laxa y uniforme que en el linfoblasto.',
+    clinico: 'Presencia en sangre periférica → eritropoyesis acelerada o patológica (hemólisis grave, infiltración medular, eritroblastosis fetal).',
+    hsNucleo: { top: '38%', left: '46%' },
+    hsCitoplasma: { top: '60%', left: '60%' },
+    hsCelula: { top: '20%', left: '20%' }
+  },
+  {
+    id: 'eritroblasto_basofilo', num: 2, nombre: 'Eritroblasto basófilo', sinonimo: 'Normoblasto basófilo',
+    badge: '1 - 4% de la población de la médula ósea',
+    foto: 'fichas/modulo1/eritroblasto_basofilo.jpg',
+    nucleo: 'Redondo y central. Cromatina más condensada, más densa y oscura. Ocupa 3/4 partes del área celular. No tiene nucléolos, desaparecen o se hacen invisibles por el alto contenido de RNA.',
+    citoplasma: 'Muy basófilo, más abundante, deja un halo perinuclear (Aparato de Golgi).',
+    nc: 'Alta. Núcleo aún dominante pero citoplasma ligeramente más visible que en proeritroblasto.',
+    hemoglobinizacion: 'Mínima o incipiente. Primeras trazas de síntesis de Hb, no detectables visualmente.',
+    distintiva: 'Cromatina iniciando condensación + nucléolo desapareciendo + tamaño reducido respecto al proeritroblasto. Primer signo de maduración nuclear.',
+    sigdiag: 'Segundo estadio de la eritropoyesis, aún confinado a médula ósea en condiciones normales. Su aparición en sangre periférica indica eritropoyesis acelerada o extramedular.',
+    error: 'Confundir con proeritroblasto. La diferencia está en la cromatina: en el eritroblasto basófilo ya se nota inicio de condensación y el nucléolo se borra.',
+    clinico: 'Al igual que el proeritroblasto, no circula normalmente. Su presencia en frotis periférico orienta a eritropoyesis extramedular o estrés eritropoyético severo.',
+    hsNucleo: { top: '32%', left: '42%' },
+    hsCitoplasma: { top: '55%', left: '58%' },
+    hsCelula: { top: '18%', left: '22%' }
+  },
+  {
+    id: 'eritroblasto_policromatico', num: 3, nombre: 'Eritroblasto policromático', sinonimo: 'Normoblasto policromático',
+    badge: '75% de la población de células rojas nucleadas en médula ósea',
+    foto: 'fichas/modulo1/eritroblasto_policromatico.jpg',
+    nucleo: 'Redondo, más pequeño. Cromatina bien condensada, patrón en bloques densos. Nucléolo ausente. El núcleo suele ser excéntrico y ocupa menos de la mitad del área celular.',
+    citoplasma: 'Moderado. Color gris-rosado o lila (policromatofilia). Mezcla de basofilia residual + hemoglobina en síntesis.',
+    nc: 'Media. Equilibrio entre núcleo y citoplasma. Punto de transición visible.',
+    hemoglobinizacion: 'Parcial. Síntesis activa de hemoglobina → citoplasma adopta coloración mixta característica.',
+    distintiva: 'Citoplasma gris-lila (policromatofilia) + cromatina en bloques + núcleo en ~50%. El estadio más reconocible por la coloración intermedia única.',
+    sigdiag: 'Estadio de mayor actividad sintética de hemoglobina. No circula en sangre periférica en condiciones normales. Su presencia en frotis indica estrés eritropoyético. En déficit de hierro, la síntesis de Hb se ve comprometida.',
+    error: 'Confundir con eritroblasto ortocromático. La clave es el color: el policromatófilo es gris-lila, el ortocromático es rosado-anaranjado. El núcleo del policromatófilo es más grande.',
+    clinico: 'En anemias ferropénicas, este estadio puede mostrar alteraciones por déficit de hierro disponible para la síntesis.',
+    hsNucleo: { top: '40%', left: '35%' },
+    hsCitoplasma: { top: '60%', left: '50%' },
+    hsCelula: { top: '20%', left: '60%' }
+  },
+  {
+    id: 'eritroblasto_ortocromatico', num: 4, nombre: 'Eritroblasto ortocromático', sinonimo: 'Normoblasto ortocromático',
+    badge: '18% de la población de células rojas nucleadas en médula ósea',
+    foto: 'fichas/modulo1/eritroblasto_ortocromatico.jpg',
+    nucleo: 'Picnótico. Muy pequeño, denso, redondeado, sin estructura interna visible. A punto de ser expulsado.',
+    citoplasma: 'Abundante. Rosado-anaranjado (casi igual al eritrocito maduro). Hemoglobinización casi completa.',
+    nc: 'Muy baja. Citoplasma predomina ampliamente. Núcleo picnótico es un punto oscuro pequeño.',
+    hemoglobinizacion: 'Casi completa. Citoplasma prácticamente igual al eritrocito maduro en coloración.',
+    distintiva: 'Núcleo picnótico (punto oscuro denso) + citoplasma rosado maduro. Último estadio nucleado de la serie. La expulsión nuclear ocurre en este estadio.',
+    sigdiag: 'Último estadio nucleado de la serie. No presente en sangre periférica normal. En megaloblastosis (déficit B12/folato) muestra asincronía núcleo-citoplasma: citoplasma ya maduro con núcleo de condensación retrasada.',
+    error: 'Confundir con eritrocito si el núcleo picnótico es muy pequeño o si el frotis tiene tinción pálida. Siempre buscar el punto nuclear oscuro con objetivo de inmersión.',
+    clinico: 'En anemias por déficit de B12 o folato, este estadio puede mostrar asincronía núcleo-citoplasma: citoplasma ya maduro pero núcleo con condensación retrasada (megaloblastosis).',
+    hsNucleo: { top: '42%', left: '38%' },
+    hsCitoplasma: { top: '60%', left: '55%' },
+    hsCelula: { top: '20%', left: '65%' }
+  },
+  {
+    id: 'reticulocito', num: 5, nombre: 'Reticulocito', sinonimo: 'Eritrocito policromatófilo / Reticulocito circulante',
+    badge: '18% de la población de células rojas nucleadas en médula ósea',
+    foto: 'fichas/modulo1/reticulocito.jpg',
+    nucleo: 'Ausente. El núcleo fue expulsado en la médula. Sin estructura nuclear.',
+    citoplasma: 'Rosado con leve tinte azulado (policromatofilia residual). Con tinción supravital (azul brillante de cresilo) muestra red de RNA ribosómico.',
+    nc: 'No aplica. Sin núcleo. Célula anucleada.',
+    hemoglobinizacion: 'Completa funcional. Aún con pequeña cantidad de RNA ribosómico residual (visible solo con tinción supravital).',
+    distintiva: 'Levemente más grande y azulado que el eritrocito maduro en May Grünwald-Giemsa. Identificación definitiva solo con tinción supravital que revela la red ribosómica.',
+    sigdiag: 'Su recuento en sangre periférica (valor normal 0,5–2%) es el índice directo de actividad eritropoyética medular. Reticulocitosis indica respuesta medular activa ante hemólisis, hemorragia aguda o tratamiento. Reticulocitopenia sugiere falla medular.',
+    error: "En May Grünwald-Giemsa, pasar por alto el leve tinte azul del reticulocito y clasificarlo como eritrocito maduro. En conteo diferencial, se reporta como 'policromatófilo'.",
+    clinico: 'Reticulocitosis (>2%) indica respuesta medular activa → anemia hemolítica, hemorragia aguda, respuesta a tratamiento con Fe/B12/folato.',
+    hsNucleo: { top: '38%', left: '42%' },
+    hsCitoplasma: { top: '38%', left: '42%' },
+    hsCelula: { top: '20%', left: '20%' },
+    sinNucleo: true
+  },
+  {
+    id: 'eritrocito', num: 6, nombre: 'Eritrocito', sinonimo: 'Hematíe / Glóbulo rojo maduro',
+    badge: 'Célula más abundante de la sangre',
+    foto: 'fichas/modulo1/eritrocito.jpg',
+    nucleo: 'Ausente. Célula anucleada completamente diferenciada.',
+    citoplasma: 'Rosa-anaranjado uniforme. Palidez central en 1/3 del diámetro (área de palidez central normal). Sin orgánulos.',
+    nc: 'No aplica. Anucleado. Área de palidez central es característica morfológica normal.',
+    hemoglobinizacion: 'Completa. Concentración de Hb óptima. Sin RNA ni orgánulos residuales.',
+    distintiva: 'Disco bicóncavo anucleado rosado con palidez central de 1/3 del diámetro. Cualquier desviación de esta morfología es potencialmente patológica.',
+    sigdiag: 'La morfología eritrocitaria es el mapa diagnóstico de las anemias. Hipocromía y microcitosis orientan a ferropenia; macrocitosis a déficit de B12 o folato; esferocitos a hemólisis; dianocitos a hemoglobinopatías.',
+    error: 'Subestimar alteraciones morfológicas sutiles: palidez central >1/3 (hipocromía), variación de tamaño (anisocitosis), variación de forma (poiquilocitosis).',
+    clinico: 'La morfología eritrocitaria es el mapa diagnóstico de las anemias: hipocromía + microcitosis → ferropenia; macrocitosis → déficit B12/folato; esferocitos → hemólisis; dianocitos → hemoglobinopatías.',
+    hsNucleo: { top: '38%', left: '40%' },
+    hsCitoplasma: { top: '60%', left: '55%' },
+    hsCelula: { top: '20%', left: '20%' },
+    sinNucleo: true
+  }
+];
+
+let estadioActual = 0;
+const fichasVistas = new Set();
+
+function renderNav() {
+  const nav = document.getElementById('nav-estadios');
+  nav.innerHTML = ESTADIOS.map((e, i) => `
+    <button class="nav-btn ${i === estadioActual ? 'activo' : ''}" onclick="irAEstadio(${i})">
+      ${fichasVistas.has(e.id) ? '<span class="check">✓</span>' : ''}
+      ${e.num} · ${e.nombre}
+    </button>
+  `).join('');
+}
+
+function irAEstadio(i) {
+  estadioActual = i;
+  renderNav();
+  renderFicha();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderFicha() {
+  const e = ESTADIOS[estadioActual];
+  fichasVistas.add(e.id);
+  registrarFichaConsultada(MODULO_ID, e.id);
+
+  const hotspotsHtml = e.sinNucleo ? `
+    <div class="hotspot hs-celula" style="top:${e.hsCelula.top};left:${e.hsCelula.left}" onclick="togglePopup(event,'celula')">+</div>
+  ` : `
+    <div class="hotspot hs-nucleo" style="top:${e.hsNucleo.top};left:${e.hsNucleo.left}" onclick="togglePopup(event,'nucleo')">+</div>
+    <div class="hotspot hs-citoplasma" style="top:${e.hsCitoplasma.top};left:${e.hsCitoplasma.left}" onclick="togglePopup(event,'citoplasma')">+</div>
+    <div class="hotspot hs-celula" style="top:${e.hsCelula.top};left:${e.hsCelula.left}" onclick="togglePopup(event,'celula')">+</div>
+  `;
+
+  document.getElementById('ficha-render').innerHTML = `
+    <div class="ficha-grid">
+      <div class="panel-foto">
+        <div class="foto-header">
+          <div class="nombre-celula">${e.nombre}</div>
+          <div class="sinonimo">${e.sinonimo}</div>
+          <div class="badge-pct">${e.badge}</div>
+        </div>
+        <div class="instruccion-hotspot"><div class="dot"></div> Haz clic en los puntos sobre la imagen para explorar</div>
+        <div class="foto-img-wrap" id="foto-wrap">
+          <img src="${e.foto}" alt="${e.nombre}">
+          ${hotspotsHtml}
+          <div class="hotspot-popup" id="popup-nucleo">
+            <div class="ptit" style="color:#F5C4B3">Núcleo</div>
+            <div>${e.nucleo}</div>
+            <span class="pcerrar" onclick="cerrarPopup('nucleo')">✕ cerrar</span>
+          </div>
+          <div class="hotspot-popup" id="popup-citoplasma">
+            <div class="ptit" style="color:#85B7EB">Citoplasma</div>
+            <div>${e.citoplasma}</div>
+            <span class="pcerrar" onclick="cerrarPopup('citoplasma')">✕ cerrar</span>
+          </div>
+          <div class="hotspot-popup" id="popup-celula">
+            <div class="ptit" style="color:#97C459">Célula completa</div>
+            <div>★ ${e.distintiva}</div>
+            <span class="pcerrar" onclick="cerrarPopup('celula')">✕ cerrar</span>
+          </div>
+        </div>
+        <div class="ficha-foto-credito">Fotografía propia · validada por docente · tinción May Grünwald-Giemsa · 1000×</div>
+      </div>
+
+      <div class="panel-info">
+        <div class="info-grid">
+          <div class="info-campo"><div class="info-label">Núcleo</div><div class="info-valor">${e.nucleo}</div></div>
+          <div class="info-campo"><div class="info-label">Citoplasma</div><div class="info-valor">${e.citoplasma}</div></div>
+          <div class="info-campo"><div class="info-label">Relación N/C</div><div class="info-valor">${e.nc}</div></div>
+          <div class="info-campo"><div class="info-label">Hemoglobinización</div><div class="info-valor">${e.hemoglobinizacion}</div></div>
+        </div>
+        <div class="info-distintiva">
+          <div class="di-icon">★</div>
+          <div><div class="di-label">Característica distintiva del estadio</div><div class="di-texto">${e.distintiva}</div></div>
+        </div>
+        <div class="info-sigdiag"><div class="info-label">Significado diagnóstico</div><div class="info-valor">${e.sigdiag}</div></div>
+        <div class="info-error">
+          <div class="ei-icon">✕</div>
+          <div><div class="ei-label">Error frecuente del estudiante</div><div class="ei-texto">${e.error}</div></div>
+        </div>
+        <div class="info-clinico"><div class="ki-label">Conexión con caso clínico</div><div class="ki-texto">${e.clinico}</div></div>
+      </div>
+    </div>
+
+    <div class="acciones-ficha">
+      ${estadioActual > 0 ? `<button class="btn btn-secundario" onclick="irAEstadio(${estadioActual - 1})">← ${ESTADIOS[estadioActual - 1].nombre}</button>` : ''}
+      ${estadioActual < ESTADIOS.length - 1 ? `<button class="btn btn-primario" onclick="irAEstadio(${estadioActual + 1})">${ESTADIOS[estadioActual + 1].nombre} →</button>` : '<button class="btn btn-primario" onclick="document.getElementById(\'quiz-section\').scrollIntoView({behavior:\'smooth\'})">Ir a la autoevaluación →</button>'}
+    </div>
+  `;
+}
+
+function togglePopup(event, tipo) {
+  event.stopPropagation();
+  const popup = document.getElementById('popup-' + tipo);
+  const isVisible = popup.classList.contains('visible');
+  document.querySelectorAll('.hotspot-popup').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('activo'));
+  if (!isVisible) {
+    // Posicionar el popup cerca del hotspot clickeado
+    const hotspot = event.currentTarget;
+    const wrap = document.getElementById('foto-wrap');
+    const wrapRect = wrap.getBoundingClientRect();
+    const hsRect = hotspot.getBoundingClientRect();
+    let left = hsRect.left - wrapRect.left + 30;
+    let top = hsRect.top - wrapRect.top - 10;
+    if (left + 210 > wrapRect.width) left = hsRect.left - wrapRect.left - 220;
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    popup.classList.add('visible');
+    hotspot.classList.add('activo');
+  }
+}
+
+function cerrarPopup(tipo) {
+  document.getElementById('popup-' + tipo).classList.remove('visible');
+  document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('activo'));
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.hotspot') && !e.target.closest('.hotspot-popup')) {
+    document.querySelectorAll('.hotspot-popup').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('activo'));
+  }
+});
+
+/* ============ QUIZ ============ */
+const PREGUNTAS_QUIZ = [
+  {
+    texto: '¿Cuál es la célula más grande de toda la serie eritroide y presenta nucléolos visibles?',
+    opciones: ['Eritroblasto basófilo', 'Proeritroblasto', 'Eritroblasto policromático', 'Reticulocito'],
+    correcta: 1
+  },
+  {
+    texto: '¿Qué estadio se caracteriza por citoplasma de color gris-lila (policromatofilia)?',
+    opciones: ['Eritroblasto ortocromático', 'Proeritroblasto', 'Eritroblasto policromático', 'Eritroblasto basófilo'],
+    correcta: 2
+  },
+  {
+    texto: '¿En qué estadio ocurre la expulsión del núcleo picnótico?',
+    opciones: ['Eritroblasto basófilo', 'Eritroblasto ortocromático', 'Reticulocito', 'Eritrocito'],
+    correcta: 1
+  },
+  {
+    texto: 'Un valor de reticulocitos >2% en sangre periférica generalmente indica:',
+    opciones: ['Falla medular', 'Respuesta medular activa (hemólisis, hemorragia, tratamiento)', 'Leucemia aguda', 'Valor normal sin significado clínico'],
+    correcta: 1
+  },
+  {
+    texto: '¿Cuál es la característica morfológica normal del eritrocito maduro que, si está alterada, sugiere hipocromía?',
+    opciones: ['Ausencia de núcleo', 'Palidez central en 1/3 del diámetro', 'Tamaño de 6-8 µm', 'Forma bicóncava'],
+    correcta: 1
+  }
+];
+
+let respuestasSeleccionadas = new Array(PREGUNTAS_QUIZ.length).fill(null);
+
+function renderQuiz() {
+  const cont = document.getElementById('quiz-preguntas');
+  cont.innerHTML = PREGUNTAS_QUIZ.map((p, i) => `
+    <div class="quiz-pregunta">
+      <div class="num">Pregunta ${i + 1} de ${PREGUNTAS_QUIZ.length}</div>
+      <div class="texto">${p.texto}</div>
+      <div class="opciones" id="opciones-${i}">
+        ${p.opciones.map((op, j) => `
+          <div class="opcion" id="op-${i}-${j}" onclick="seleccionarOpcion(${i}, ${j})">${op}</div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function seleccionarOpcion(pregunta, opcion) {
+  respuestasSeleccionadas[pregunta] = opcion;
+  document.querySelectorAll(`#opciones-${pregunta} .opcion`).forEach((el, j) => {
+    el.classList.toggle('seleccionada', j === opcion);
+  });
+}
+
+function enviarQuiz() {
+  if (respuestasSeleccionadas.includes(null)) {
+    alert('Por favor responde todas las preguntas antes de enviar.');
+    return;
+  }
+
+  let correctas = 0;
+  PREGUNTAS_QUIZ.forEach((p, i) => {
+    const esCorrecta = respuestasSeleccionadas[i] === p.correcta;
+    if (esCorrecta) correctas++;
+    document.querySelectorAll(`#opciones-${i} .opcion`).forEach((el, j) => {
+      if (j === p.correcta) el.classList.add('correcta');
+      else if (j === respuestasSeleccionadas[i] && !esCorrecta) el.classList.add('incorrecta');
+    });
+  });
+
+  const resultado = completarQuiz(MODULO_ID, {
+    puntaje: correctas,
+    total: PREGUNTAS_QUIZ.length,
+    respuestas: respuestasSeleccionadas
+  });
+
+  const div = document.getElementById('quiz-resultado');
+  div.classList.add('visible', resultado.aprobado ? 'aprobado' : 'reprobado');
+  div.innerHTML = `
+    <div class="pct">${Math.round(resultado.porcentaje)}%</div>
+    <div class="msg">${resultado.aprobado
+      ? '¡Felicitaciones! Aprobaste el Módulo 1. El siguiente módulo ya está disponible.'
+      : 'Necesitas 60% o más para aprobar. Revisa las fichas y vuelve a intentarlo.'}</div>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      ${resultado.aprobado ? '<a href="../modulos.html" class="btn btn-primario">Volver al menú de módulos</a>' : '<button class="btn btn-secundario" onclick="reiniciarQuiz()">Intentar de nuevo</button>'}
+    </div>
+  `;
+  document.getElementById('btn-enviar-quiz').style.display = 'none';
+  div.scrollIntoView({ behavior: 'smooth' });
+}
+
+function reiniciarQuiz() {
+  respuestasSeleccionadas = new Array(PREGUNTAS_QUIZ.length).fill(null);
+  document.getElementById('quiz-resultado').classList.remove('visible', 'aprobado', 'reprobado');
+  document.getElementById('btn-enviar-quiz').style.display = 'block';
+  renderQuiz();
+}
+
+/* ============ INIT ============ */
+registrarAccesoModulo(MODULO_ID);
+iniciarConteoTiempo(MODULO_ID);
+renderNav();
+renderFicha();
+renderQuiz();
+</script>
+
+</body>
+</html>

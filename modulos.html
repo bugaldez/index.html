@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulos · Atlas Morfológico Interactivo · Hematología</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+<style>
+  body { background: #fff; }
+  .intro-bar { padding: 20px 48px 8px; }
+  .intro-bar h1 { font-size: 22px; color: var(--rojo); font-weight: 500; margin-bottom: 4px; }
+  .intro-bar p { font-size: 13px; color: var(--texto-suave); }
+  .body-modulos { padding: 16px 48px 40px; }
+  @media (max-width: 900px) {
+    .intro-bar, .body-modulos { padding-left: 24px; padding-right: 24px; }
+  }
+  .candado { font-size: 16px; }
+</style>
+</head>
+<body>
+
+  <div class="atlas-header">
+    <div>
+      <div class="breadcrumb">Atlas morfológico interactivo</div>
+      <div class="titulo-pagina">Módulos · Hematología I y II</div>
+    </div>
+    <a href="index.html" class="volver">← Portada</a>
+  </div>
+
+  <div class="barra-progreso-global">
+    <span class="label">Tu avance global</span>
+    <div class="barra-progreso-track"><div class="barra-progreso-fill" id="barra-fill" style="width:0%"></div></div>
+    <span class="barra-progreso-pct" id="barra-pct">0%</span>
+  </div>
+
+  <div class="intro-bar">
+    <h1>Selecciona un módulo para comenzar</h1>
+    <p>Los módulos se desbloquean progresivamente al completar la autoevaluación del módulo anterior.</p>
+  </div>
+
+  <div class="body-modulos" id="contenedor-modulos"></div>
+
+  <div class="atlas-footer">
+    <span>Universidad de Tarapacá · Tecnología Médica · 2026</span>
+    <span>Mg. Bárbara Ugalde Zúñiga</span>
+  </div>
+
+<script src="js/progreso.js"></script>
+<script src="js/estadisticas.js"></script>
+<script>
+
+const MODULOS_INFO = {
+  mod1:  { numero: 'Módulo 1',  nombre: 'Serie roja · Eritropoyesis',         meta: '6 estadios · 6 fichas',                     href: 'modulos/modulo1.html',  color: '#993C1D', claro: '#F5C4B3', palido: '#FAECE7' },
+  mod2a: { numero: 'Módulo 2A', nombre: 'Serie granulocítica',                meta: '5 estadios · 5 fichas',                     href: 'modulos/modulo2a.html', color: '#185FA5', claro: '#B5D4F4', palido: '#E6F1FB' },
+  mod2b: { numero: 'Módulo 2B', nombre: 'Granulocitos maduros',               meta: '3 células · 3 fichas',                      href: 'modulos/modulo2b.html', color: '#0F6E56', claro: '#9FE1CB', palido: '#E1F5EE' },
+  mod3a: { numero: 'Módulo 3A', nombre: 'Linfopoyesis general',               meta: '3 estadios · 3 fichas',                     href: 'modulos/modulo3a.html', color: '#993556', claro: '#F4C0D1', palido: '#FBEAF0' },
+  mod3b: { numero: 'Módulo 3B', nombre: 'Linfocitos maduros',                 meta: '6 fichas · B, T, NK, plasma',               href: 'modulos/modulo3b.html', color: '#993556', claro: '#F4C0D1', palido: '#FBEAF0' },
+  mod4:  { numero: 'Módulo 4',  nombre: 'Serie monocítica',                   meta: '4 estadios · 4 fichas',                     href: 'modulos/modulo4.html',  color: '#D94F00', claro: '#F5B49A', palido: '#FCEEE6' },
+  mod5:  { numero: 'Módulo 5',  nombre: 'Serie plaquetaria',                  meta: '5 estadios · 5 fichas',                     href: 'modulos/modulo5.html',  color: '#3D5A6C', claro: '#B8CDD6', palido: '#EBF0F3' },
+  mod6:  { numero: 'Módulo 6',  nombre: 'Leucemias agudas · Blastos',         meta: 'FAB + OMS 2022',                            href: 'modulos/modulo6.html',  color: '#534AB7', claro: '#CECBF6', palido: '#EEEDFE' },
+  mod7:  { numero: 'Módulo 7',  nombre: 'Leucemias crónicas',                 meta: 'LMC · LLC · Tricoleucemia',                 href: 'modulos/modulo7.html',  color: '#534AB7', claro: '#CECBF6', palido: '#EEEDFE' },
+  mod8:  { numero: 'Módulo 8',  nombre: 'Síndromes mielodisplásicos',         meta: 'Displasia · OMS 2022',                      href: 'modulos/modulo8.html',  color: '#534AB7', claro: '#CECBF6', palido: '#EEEDFE' },
+  mod9:  { numero: 'Módulo 9',  nombre: 'Linfomas · Hodgkin',                 meta: 'Reed-Sternberg · LLP',                      href: 'modulos/modulo9.html',  color: '#534AB7', claro: '#CECBF6', palido: '#EEEDFE' },
+  mod10: { numero: 'Módulo 10', nombre: 'Gammapatías monoclonales',           meta: 'Mieloma · MGUS · Waldenström',              href: 'modulos/modulo10.html', color: '#3B6D11', claro: '#C0DD97', palido: '#EAF3DE' },
+  mod11: { numero: 'Módulo 11', nombre: 'Alteraciones plaquetarias',          meta: 'PTI · PTT · Esquistocitos',                 href: 'modulos/modulo11.html', color: '#5F5E5A', claro: '#D3D1C7', palido: '#F1EFE8' },
+  mod12: { numero: 'Módulo 12', nombre: 'Casos clínicos integrados',          meta: '6 casos · diagnóstico diferencial',         href: 'modulos/modulo12.html', color: '#5F5E5A', claro: '#D3D1C7', palido: '#F1EFE8' }
+};
+
+const ICONOS_ESTADO = {
+  completado: '🟢',
+  en_progreso: '🟡',
+  disponible: '⚪',
+  bloqueado: '🔒'
+};
+
+const TEXTO_ESTADO = {
+  completado: 'Completado',
+  en_progreso: 'En progreso',
+  disponible: 'Disponible',
+  bloqueado: 'Bloqueado'
+};
+
+function renderModulos() {
+  const progreso = obtenerProgreso();
+  const pct = calcularPorcentajeGlobal();
+  document.getElementById('barra-fill').style.width = pct + '%';
+  document.getElementById('barra-pct').textContent = pct + '%';
+
+  const grupoI = ['mod1','mod2a','mod2b','mod3a','mod3b','mod4','mod5'];
+  const grupoII = ['mod6','mod7','mod8','mod9','mod10','mod11','mod12'];
+
+  function renderGrupo(ids) {
+    return `<div class="grid-modulos">` + ids.map(id => renderTarjeta(id, progreso)).join('') + `</div>`;
+  }
+
+  document.getElementById('contenedor-modulos').innerHTML = `
+    <div class="seccion-label" style="color:#993C1D">Hematología I · Morfología normal y benigna</div>
+    ${renderGrupo(grupoI)}
+    <div class="seccion-label" style="color:#534AB7; margin-top:24px">Hematología II · Patología hematológica</div>
+    ${renderGrupo(grupoII)}
+  `;
+}
+
+function renderTarjeta(id, progreso) {
+  const info = MODULOS_INFO[id];
+  const estadoMod = progreso.modulos[id]?.estado || 'bloqueado';
+  const bloqueado = estadoMod === 'bloqueado';
+  const href = bloqueado ? 'javascript:void(0)' : info.href;
+  const onclick = bloqueado ? `onclick="alert('Completa el módulo anterior para desbloquear este contenido.')"` : '';
+
+  return `
+    <a href="${href}" ${onclick} class="mod-card-link ${estadoMod}" style="border-color:${info.claro}">
+      <div class="mod-card-top" style="background:${info.palido}">
+        <span class="mod-card-etiqueta" style="color:${info.color}">${info.numero}</span>
+        <span class="estado-icono">${ICONOS_ESTADO[estadoMod]}</span>
+      </div>
+      <div class="mod-card-nombre">${info.nombre}</div>
+      <div class="mod-card-meta">
+        <span style="color:${info.color}">${info.meta}</span>
+        <span class="badge-estado badge-${estadoMod}">${TEXTO_ESTADO[estadoMod]}</span>
+      </div>
+    </a>
+  `;
+}
+
+renderModulos();
+</script>
+
+</body>
+</html>

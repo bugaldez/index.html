@@ -1,0 +1,368 @@
+/* ============================================
+   ESTILOS GLOBALES · Atlas Morfológico Interactivo
+   Universidad de Tarapacá · Hematología I y II
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Paleta serie roja */
+  --rojo: #993C1D;
+  --rojo-medio: #D85A30;
+  --rojo-claro: #F5C4B3;
+  --rojo-palido: #FAECE7;
+  --rojo-oscuro: #7A2900;
+
+  /* Paleta serie granulocítica */
+  --azul: #185FA5;
+  --azul-medio: #378ADD;
+  --azul-claro: #B5D4F4;
+  --azul-palido: #E6F1FB;
+
+  /* Paleta granulocitos maduros */
+  --teal: #0F6E56;
+  --teal-medio: #1D9E75;
+  --teal-claro: #9FE1CB;
+  --teal-palido: #E1F5EE;
+
+  /* Paleta serie linfoide */
+  --rosa: #993556;
+  --rosa-medio: #D4537E;
+  --rosa-claro: #F4C0D1;
+  --rosa-palido: #FBEAF0;
+
+  /* Paleta serie monocítica */
+  --naranja: #D94F00;
+  --naranja-medio: #F26522;
+  --naranja-claro: #F5B49A;
+  --naranja-palido: #FCEEE6;
+
+  /* Paleta serie plaquetaria */
+  --grisazul: #3D5A6C;
+  --grisazul-medio: #5F7D8F;
+  --grisazul-claro: #B8CDD6;
+  --grisazul-palido: #EBF0F3;
+
+  /* Paleta Hematología II - neoplasias */
+  --morado: #534AB7;
+  --morado-medio: #7F77DD;
+  --morado-claro: #CECBF6;
+  --morado-palido: #EEEDFE;
+
+  /* Paleta gammapatías */
+  --verde: #3B6D11;
+  --verde-medio: #639922;
+  --verde-claro: #C0DD97;
+  --verde-palido: #EAF3DE;
+
+  /* Paleta plaquetas patológicas / casos */
+  --gris: #5F5E5A;
+  --gris-medio: #888780;
+  --gris-claro: #D3D1C7;
+  --gris-palido: #F1EFE8;
+
+  /* Neutros */
+  --fondo: #ffffff;
+  --fondo2: #F8F6F5;
+  --borde: #E8E0DC;
+  --texto: #1a0f0a;
+  --texto-suave: #6b5a52;
+  --texto-tenue: #9a8a82;
+
+  /* Estados de progreso */
+  --estado-completado: #3B6D11;
+  --estado-progreso: #D94F00;
+  --estado-disponible: #185FA5;
+  --estado-bloqueado: #8a8580;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+/* ---------- Header reutilizable ---------- */
+.atlas-header {
+  background: linear-gradient(135deg, var(--rojo-oscuro) 0%, var(--rojo) 50%, #B84A22 100%);
+  padding: 24px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.atlas-header .titulo-pagina {
+  font-size: 22px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.atlas-header .breadcrumb {
+  font-size: 11px;
+  color: var(--rojo-claro);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+
+.atlas-header .volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255,255,255,.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: background .15s;
+}
+
+.atlas-header .volver:hover { background: rgba(255,255,255,.25); }
+
+/* ---------- Barra de progreso global ---------- */
+.barra-progreso-global {
+  background: var(--fondo2);
+  padding: 12px 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.barra-progreso-global .label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.barra-progreso-track {
+  flex: 1;
+  height: 8px;
+  background: var(--borde);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barra-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rojo) 0%, var(--naranja) 100%);
+  border-radius: 4px;
+  transition: width .4s ease;
+}
+
+.barra-progreso-pct {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rojo);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ---------- Tarjetas de módulo (menú) ---------- */
+.mod-card-link {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid;
+  text-decoration: none;
+  display: block;
+  position: relative;
+  transition: transform .15s, box-shadow .15s;
+  background: #fff;
+}
+
+.mod-card-link.disponible:hover,
+.mod-card-link.en_progreso:hover,
+.mod-card-link.completado:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  cursor: pointer;
+}
+
+.mod-card-link.bloqueado {
+  opacity: .55;
+  cursor: not-allowed;
+  filter: grayscale(.5);
+}
+
+.mod-card-top {
+  padding: 10px 14px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mod-card-etiqueta {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.mod-card-nombre {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto);
+  padding: 0 14px 4px;
+  line-height: 1.3;
+}
+
+.mod-card-meta {
+  font-size: 10px;
+  padding: 0 14px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.estado-icono {
+  font-size: 14px;
+}
+
+/* ---------- Estado badges ---------- */
+.badge-estado {
+  font-size: 9px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.badge-completado { background: #EAF3DE; color: var(--estado-completado); }
+.badge-en_progreso { background: #FCEEE6; color: var(--estado-progreso); }
+.badge-disponible { background: #E6F1FB; color: var(--estado-disponible); }
+.badge-bloqueado { background: #F1EFE8; color: var(--estado-bloqueado); }
+
+/* ---------- Grids ---------- */
+.grid-modulos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+.grid-modulos-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+@media (max-width: 900px) {
+  .grid-modulos { grid-template-columns: repeat(2, 1fr); }
+  .grid-modulos-3 { grid-template-columns: repeat(2, 1fr); }
+  .atlas-header, .barra-progreso-global { padding-left: 24px; padding-right: 24px; }
+}
+
+@media (max-width: 560px) {
+  .grid-modulos, .grid-modulos-3 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Fichas dentro de un módulo ---------- */
+.ficha-contenedor {
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid var(--borde);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.ficha-foto-wrap {
+  position: relative;
+  background: #f5f5f5;
+}
+
+.ficha-foto-wrap img {
+  width: 100%;
+  display: block;
+}
+
+.hotspot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  transition: transform .15s;
+  z-index: 5;
+}
+
+.hotspot:hover { transform: scale(1.15); }
+
+.hotspot-popup {
+  position: absolute;
+  background: #1a1a2e;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px 14px;
+  width: 220px;
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  z-index: 10;
+  display: none;
+}
+
+.hotspot-popup.visible { display: block; }
+
+.hotspot-popup .popup-titulo {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+
+.hotspot-popup .popup-cerrar {
+  font-size: 10px;
+  color: #8a8aa0;
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+/* ---------- Botones generales ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primario { background: var(--rojo); color: #fff; }
+.btn-primario:hover { background: var(--rojo-oscuro); transform: translateY(-1px); }
+
+.btn-secundario { background: var(--fondo2); color: var(--texto); border: 1px solid var(--borde); }
+.btn-secundario:hover { background: var(--borde); }
+
+.btn-descarga { background: var(--azul-palido); color: var(--azul); }
+.btn-descarga:hover { background: var(--azul-claro); }
+
+/* ---------- Footer ---------- */
+.atlas-footer {
+  background: var(--fondo2);
+  padding: 14px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--borde);
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--texto-suave);
+}
