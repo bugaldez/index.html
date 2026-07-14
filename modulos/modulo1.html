@@ -6,6 +6,8 @@
 <title>Módulo 1 · Serie Roja · Atlas Hematología</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/estilos.css">
+<script src="../js/progreso.js"></script>
+<script src="../js/estadisticas.js"></script>
 <style>
   body { background: #fff; }
 
@@ -204,8 +206,6 @@
     </div>
   </div>
 
-<script src="../js/progreso.js"></script>
-<script src="../js/estadisticas.js"></script>
 <script>
 const MODULO_ID = 'mod1';
 
@@ -213,7 +213,7 @@ const ESTADIOS = [
   {
     id: 'proeritroblasto', num: 1, nombre: 'Proeritroblasto', sinonimo: 'Pronormoblasto',
     badge: '1% de la población de la médula ósea',
-    foto: 'fichas/modulo1/proeritroblasto.jpg',
+    foto: '../fichas/modulo1/proeritroblasto.jpg',
     nucleo: 'Redondo u ovalado. Ocupa casi la totalidad de la célula. Cromatina inmadura, fina, en pequeños grumos (vesicular) con una ligera densificación con posición central. 1 a 2 nucléolos visibles.',
     citoplasma: 'Basófilo intenso, rico en polirribosomas. La membrana citoplasmática puede presentar prolongaciones gruesas.',
     nc: 'Muy alta · núcleo predominante · citoplasma escaso',
@@ -229,7 +229,7 @@ const ESTADIOS = [
   {
     id: 'eritroblasto_basofilo', num: 2, nombre: 'Eritroblasto basófilo', sinonimo: 'Normoblasto basófilo',
     badge: '1 - 4% de la población de la médula ósea',
-    foto: 'fichas/modulo1/eritroblasto_basofilo.jpg',
+    foto: '../fichas/modulo1/eritroblasto_basofilo.jpg',
     nucleo: 'Redondo y central. Cromatina más condensada, más densa y oscura. Ocupa 3/4 partes del área celular. No tiene nucléolos, desaparecen o se hacen invisibles por el alto contenido de RNA.',
     citoplasma: 'Muy basófilo, más abundante, deja un halo perinuclear (Aparato de Golgi).',
     nc: 'Alta. Núcleo aún dominante pero citoplasma ligeramente más visible que en proeritroblasto.',
@@ -245,7 +245,7 @@ const ESTADIOS = [
   {
     id: 'eritroblasto_policromatico', num: 3, nombre: 'Eritroblasto policromático', sinonimo: 'Normoblasto policromático',
     badge: '75% de la población de células rojas nucleadas en médula ósea',
-    foto: 'fichas/modulo1/eritroblasto_policromatico.jpg',
+    foto: '../fichas/modulo1/eritroblasto_policromatico.jpg',
     nucleo: 'Redondo, más pequeño. Cromatina bien condensada, patrón en bloques densos. Nucléolo ausente. El núcleo suele ser excéntrico y ocupa menos de la mitad del área celular.',
     citoplasma: 'Moderado. Color gris-rosado o lila (policromatofilia). Mezcla de basofilia residual + hemoglobina en síntesis.',
     nc: 'Media. Equilibrio entre núcleo y citoplasma. Punto de transición visible.',
@@ -261,7 +261,7 @@ const ESTADIOS = [
   {
     id: 'eritroblasto_ortocromatico', num: 4, nombre: 'Eritroblasto ortocromático', sinonimo: 'Normoblasto ortocromático',
     badge: '18% de la población de células rojas nucleadas en médula ósea',
-    foto: 'fichas/modulo1/eritroblasto_ortocromatico.jpg',
+    foto: '../fichas/modulo1/eritroblasto_ortocromatico.jpg',
     nucleo: 'Picnótico. Muy pequeño, denso, redondeado, sin estructura interna visible. A punto de ser expulsado.',
     citoplasma: 'Abundante. Rosado-anaranjado (casi igual al eritrocito maduro). Hemoglobinización casi completa.',
     nc: 'Muy baja. Citoplasma predomina ampliamente. Núcleo picnótico es un punto oscuro pequeño.',
@@ -277,7 +277,7 @@ const ESTADIOS = [
   {
     id: 'reticulocito', num: 5, nombre: 'Reticulocito', sinonimo: 'Eritrocito policromatófilo / Reticulocito circulante',
     badge: '18% de la población de células rojas nucleadas en médula ósea',
-    foto: 'fichas/modulo1/reticulocito.jpg',
+    foto: '../fichas/modulo1/reticulocito.jpg',
     nucleo: 'Ausente. El núcleo fue expulsado en la médula. Sin estructura nuclear.',
     citoplasma: 'Rosado con leve tinte azulado (policromatofilia residual). Con tinción supravital (azul brillante de cresilo) muestra red de RNA ribosómico.',
     nc: 'No aplica. Sin núcleo. Célula anucleada.',
@@ -294,7 +294,7 @@ const ESTADIOS = [
   {
     id: 'eritrocito', num: 6, nombre: 'Eritrocito', sinonimo: 'Hematíe / Glóbulo rojo maduro',
     badge: 'Célula más abundante de la sangre',
-    foto: 'fichas/modulo1/eritrocito.jpg',
+    foto: '../fichas/modulo1/eritrocito.jpg',
     nucleo: 'Ausente. Célula anucleada completamente diferenciada.',
     citoplasma: 'Rosa-anaranjado uniforme. Palidez central en 1/3 del diámetro (área de palidez central normal). Sin orgánulos.',
     nc: 'No aplica. Anucleado. Área de palidez central es característica morfológica normal.',
